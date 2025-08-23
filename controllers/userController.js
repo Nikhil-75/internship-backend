@@ -14,7 +14,7 @@ exports.getApi = (req, res) => {
   res.status(200).json({
     status: true,
     statusCode: 200,
-    message: "API is working fine!"
+    message: "API is working fine!",
   });
 };
 
@@ -43,19 +43,18 @@ exports.userRegister = async (req, res, next) => {
 
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = new userData({ firstName, lastName, email, password: hashedPassword });
-    const result = await user.save();
-
-    const access_token = jwt.sign({ _id: result._id }, JWT_SECRET, { expiresIn: "2h" });
-    const refresh_token = jwt.sign({ _id: result._id }, REFRESH_SECRET, { expiresIn: "1y" });
-
-    await RefreshToken.create({ token: refresh_token, email });
+    const user = new userData({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+    await user.save();
 
     res.status(200).json({
       status: true,
       statusCode: 200,
       message: "User registered successfully",
-      data: { access_token, refresh_token }
     });
   } catch (err) {
     next(err);
@@ -72,12 +71,20 @@ exports.userLogin = async (req, res, next) => {
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const token = jwt.sign({ user_id: user._id, email }, JWT_SECRET, { expiresIn: "2h" });
-      const refresh_token = jwt.sign({ _id: user._id }, REFRESH_SECRET, { expiresIn: "1y" });
+      const token = jwt.sign({ user_id: user._id, email }, JWT_SECRET, {
+        expiresIn: "2h",
+      });
+      const refresh_token = jwt.sign({ _id: user._id }, REFRESH_SECRET, {
+        expiresIn: "1y",
+      });
 
       const emailFind = await RefreshToken.findOne({ email });
       if (emailFind) {
-        await RefreshToken.findOneAndUpdate({ email }, { token: refresh_token }, { new: true });
+        await RefreshToken.findOneAndUpdate(
+          { email },
+          { token: refresh_token },
+          { new: true }
+        );
       } else {
         await RefreshToken.create({ token: refresh_token, email });
       }
@@ -86,7 +93,7 @@ exports.userLogin = async (req, res, next) => {
         status: true,
         statusCode: 200,
         message: "Login successful",
-        data: { access_token: token, refresh_token }
+        data: { access_token: token, refresh_token },
       });
     }
     return next(CustomErrorHandler.wrongCredentials("Invalid password"));
@@ -102,12 +109,14 @@ exports.genAccessToken = async (req, res, next) => {
     const user = await userData.findById(Id);
     if (!user) return next(CustomErrorHandler.notFound("User not found"));
 
-    const token = jwt.sign({ user_id: user._id }, JWT_SECRET, { expiresIn: "2h" });
+    const token = jwt.sign({ user_id: user._id }, JWT_SECRET, {
+      expiresIn: "2h",
+    });
     return res.status(200).json({
       status: true,
       statusCode: 200,
       message: "Access token generated successfully",
-      data: { access_token: token }
+      data: { access_token: token },
     });
   } catch (error) {
     next(error);
@@ -135,7 +144,7 @@ exports.forgetPassword = async (req, res, next) => {
       status: true,
       statusCode: 200,
       message: "OTP generated successfully",
-      data: { otp } // sirf testing ke liye
+      data: { otp }, // sirf testing ke liye
     });
   } catch (error) {
     next(error);
@@ -159,13 +168,15 @@ exports.otpVerify = async (req, res, next) => {
 
       delete otpMemoryStore[email];
 
-      const token = jwt.sign({ user_id: updatedUser._id }, JWT_SECRET, { expiresIn: "15m" });
+      const token = jwt.sign({ user_id: updatedUser._id }, JWT_SECRET, {
+        expiresIn: "15m",
+      });
 
       return res.status(200).json({
         status: true,
         statusCode: 200,
         message: "OTP verified successfully",
-        data: { access_token: token }
+        data: { access_token: token },
       });
     } else {
       return next(CustomErrorHandler.wrongOtp("Invalid OTP"));
@@ -181,12 +192,16 @@ exports.resetPassword = async (req, res, next) => {
     const Id = req.token.user_id;
     const password = req.body.password;
     const hashedPassword = await bcrypt.hash(password, salt);
-    await userData.findByIdAndUpdate(Id, { password: hashedPassword }, { new: true });
+    await userData.findByIdAndUpdate(
+      Id,
+      { password: hashedPassword },
+      { new: true }
+    );
 
     res.status(200).json({
       status: true,
       statusCode: 200,
-      message: "Password updated successfully"
+      message: "Password updated successfully",
     });
   } catch (error) {
     next(error);
