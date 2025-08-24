@@ -42,15 +42,23 @@ class CustomErrorHandler extends Error {
     return new CustomErrorHandler(400, message);
   }
 
-  static firstNameError(message = "Firstname at least 3 characters") {
+  static firstNameError(message = "Firstname must be alphabets only") {
     return new CustomErrorHandler(400, message);
   }
 
-  static lastNameError(message = "Lastname at least 3 characters") {
+  static firstNameLength(message = "Firstname at least 3 characters") {
     return new CustomErrorHandler(400, message);
   }
 
-  static emailError(message = "Invalid email format") {
+  static lastNameError(message = "Lastname must be alphabets only") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static lastNameLength(message = "Lastname at least 3 characters") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static emailError(message = "Email must be a valid Gmail ID") {
     return new CustomErrorHandler(400, message);
   }
 }
