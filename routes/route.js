@@ -3,12 +3,12 @@ const { verifyToken, mailVerify } = require("../auth/verifyToken");
 const { refreshTokenVerify } = require("../auth/refreshTokenVerify");
 const userCon = require("../controllers/userController");
 const passwordVerify = require("../middlewares/passwordVerification");
-
+const { registerSchema } = require("../services/schemaValidator");
 const router = express.Router();
 
 router.get("/", userCon.getApi);
 
-router.post("/register", userCon.userRegister);
+router.post("/register", registerSchema, userCon.userRegister);
 router.post("/login", userCon.userLogin);
 router.post("/forgot-password", userCon.forgetPassword);
 router.post("/otp-verification", userCon.otpVerify);

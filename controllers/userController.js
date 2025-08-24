@@ -18,37 +18,21 @@ exports.getApi = (req, res) => {
   });
 };
 
+
 // ---------------- User Register ----------------
 exports.userRegister = async (req, res, next) => {
-  const registerSchema = Joi.object({
-    firstName: Joi.string().min(3).max(15).required(),
-    lastName: Joi.string().min(3).max(15).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string()
-      .pattern(new RegExp("^[a-zA-Z0-9!@#$]{5,30}$"))
-      .min(6)
-      .max(30)
-      .required(),
-    confirm_password: Joi.ref("password"),
-  });
-
-  const { error } = registerSchema.validate(req.body);
-  if (error) return next(CustomErrorHandler.passLength(error.message));
-
   try {
-    const exist = await userData.exists({ email: req.body.email });
-    if (exist) {
-      return next(CustomErrorHandler.alreadyExist("This email already exists"));
-    }
-
     const { firstName, lastName, email, password } = req.body;
+
     const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = new userData({
       firstName,
       lastName,
       email,
       password: hashedPassword,
     });
+
     await user.save();
 
     res.status(200).json({
@@ -207,3 +191,6 @@ exports.resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+
+
+

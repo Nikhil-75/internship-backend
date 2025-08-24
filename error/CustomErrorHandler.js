@@ -1,12 +1,12 @@
 class CustomErrorHandler extends Error {
   constructor(statusCode, message) {
     super();
-    this.status = false;        
-    this.statusCode = statusCode;  
-    this.message = message;       
+    this.status = false;
+    this.statusCode = statusCode;
+    this.message = message;
   }
 
-  static Error404(message = "Sorry page not available") {
+  static Error404(message = "Sorry, page not available") {
     return new CustomErrorHandler(404, message);
   }
 
@@ -14,23 +14,43 @@ class CustomErrorHandler extends Error {
     return new CustomErrorHandler(401, message);
   }
 
-  static unAuthorized(message = "Unauthorized login") {
+  static unAuthorized(message = "Unauthorized access") {
     return new CustomErrorHandler(401, message);
   }
 
   static wrongOtp(message = "Invalid OTP") {
-    return new CustomErrorHandler(401, message);
+    return new CustomErrorHandler(400, message);
   }
 
   static alreadyExist(message = "Already exists") {
     return new CustomErrorHandler(409, message);
   }
 
-  static notFound(message = "404 not found") {
+  static notFound(message = "Resource not found") {
     return new CustomErrorHandler(404, message);
   }
 
-  static passLength(message = "Password must be at least 5 characters long") {
+  static invalidPassword(message = "Invalid password format") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static passLength(message = "Password must be 6 to 8 characters") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static passwordMismatch(message = "Confirm password must match") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static firstNameError(message = "Firstname at least 3 characters") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static lastNameError(message = "Lastname at least 3 characters") {
+    return new CustomErrorHandler(400, message);
+  }
+
+  static emailError(message = "Invalid email format") {
     return new CustomErrorHandler(400, message);
   }
 }
